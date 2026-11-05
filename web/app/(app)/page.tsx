@@ -12,6 +12,7 @@ type Ready = {
   id: string; channel: string; recipient: string | null; subject: string | null; body: string;
   lead: { url: string | null; company: string | null; name: string | null; author_handle: string | null } | null;
 };
+type Activity = { active_seconds: number; apps: { name: string; seconds: number }[]; sites: { name: string; seconds: number }[] };
 type Item = { id: string; title: string; done: boolean; owner: { name: string } | null };
 
 export default async function Today() {
@@ -19,7 +20,7 @@ export default async function Today() {
   const { current } = await loadWorkspaces(sb);
   const ws = current!.id;
 
-  const [{ data: cards }, { data: items }, { count: leadCount }, { data: runs }, { data: ready }] = await Promise.all([
+  const [{ data: cards }, { data: items }, { count: leadCount }, { data: runs }, { data: ready }, { data: act }] = await Promise.all([
     sb.from("cards").select("id, title, body, urgency, kind, created_at, source:source_agent_id(name, character)")
       .eq("status", "pending").or(`workspace_id.eq.${ws},workspace_id.is.null`)
       .order("urgency", { ascending: false }).order("created_at"),
@@ -30,7 +31,10 @@ export default async function Today() {
       .gte("created_at", hoursAgoIso(24)),
     sb.from("drafts").select("id, channel, recipient, subject, body, lead:lead_id(url, company, name, author_handle)")
       .eq("workspace_id", ws).eq("status", "approved").order("created_at"),
+    sb.from("events").select("payload").eq("event_type", "activity.day").eq("payload->>date", today())
+      .order("created_at", { ascending: false }).limit(1).maybeSingle(),
   ]);
+  const day = (act?.payload ?? null) as Activity | null;
   const toSend = (ready ?? []) as unknown as Ready[];
 
   const pending = (cards ?? []) as unknown as Card[];
@@ -122,6 +126,16 @@ export default async function Today() {
         </section>
       )}
 
+      {day && (
+        <section>
+          <h2 className="h-section">Your day · {hm(day.active_seconds)} active</h2>
+          <div className="grid gap-3 md:grid-cols-2">
+            <Usage title="Apps" rows={day.apps} />
+            <Usage title="Sites" rows={day.sites} />
+          </div>
+        </section>
+      )}
+
       <section className="grid gap-6 md:grid-cols-2">
         <div>
           <h2 className="h-section">Your checklist</h2>
@@ -143,6 +157,30 @@ export default async function Today() {
           </div>
         </div>
       </section>
+    </div>
+  );
+}
+
+function hm(sec: number) {
+  const h = Math.floor(sec / 3600), m = Math.round((sec % 3600) / 60);
+  return h ? `${h}h ${m}m` : `${m}m`;
+}
+
+function Usage({ title, rows }: { title: string; rows: { name: string; seconds: number }[] }) {
+  const top = rows.slice(0, 6);
+  const max = top[0]?.seconds ?? 1;
+  return (
+    <div className="card">
+      <div className="mb-2 text-xs text-muted">{title}</div>
+      {top.length === 0 && <p className="text-sm text-muted">Nothing yet.</p>}
+      <ul className="space-y-1.5">
+        {top.map((r) => (
+          <li key={r.name} className="text-sm">
+            <div className="flex justify-between gap-2"><span className="truncate">{r.name}</span><span className="text-muted">{hm(r.seconds)}</span></div>
+            <div className="mt-0.5 h-1 rounded bg-panel-2"><div className="h-1 rounded bg-teal" style={{ width: `${(r.seconds / max) * 100}%` }} /></div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

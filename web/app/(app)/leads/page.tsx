@@ -2,6 +2,7 @@ import Link from "next/link";
 import { supabaseServer } from "@/lib/supabase/server";
 import { loadWorkspaces } from "@/lib/workspace";
 import { ago, money } from "@/lib/format";
+import { TestIntake } from "./test-intake";
 
 const TABS = [
   ["promoted", "Your queue"], ["maybe", "Maybe"], ["pending_review", "With the boss"], ["discarded", "Tossed"],
@@ -24,6 +25,7 @@ export default async function Leads({ searchParams }: { searchParams: Promise<{ 
 
   return (
     <div className="space-y-4">
+      <TestIntake />
       <div className="flex flex-wrap gap-1">
         {TABS.map(([key, label]) => (
           <Link key={key} href={`/leads?tab=${key}`}

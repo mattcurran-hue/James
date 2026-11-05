@@ -50,3 +50,21 @@ export async function signOut() {
   await sb.auth.signOut();
   redirect("/login");
 }
+
+// Signed-in test path for the Intake Clerk: same pipeline as the website webhook.
+export async function testIntake(_prev: { msg: string } | null, formData: FormData) {
+  const sb = await supabaseServer();
+  const { data: aal } = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (aal?.currentLevel !== "aal2") return { msg: "Not signed in." };
+  const fields = Object.fromEntries([...formData.entries()].filter(([k]) => !k.startsWith("$")));
+  try {
+    const { processIntake } = await import("@/lib/agents/intake");
+    const r = await processIntake(fields, "test");
+    revalidatePath("/", "layout");
+    if (!r.ok) return { msg: `Skipped: ${r.reason}` };
+    if ("duplicate" in r) return { msg: "Duplicate. Change something and resend." };
+    return { msg: `Scored ${r.score}/10 → ${r.status === "promoted" ? "your queue" : r.status}. Check Today.` };
+  } catch (e) {
+    return { msg: `Failed: ${e instanceof Error ? e.message : String(e)}` };
+  }
+}

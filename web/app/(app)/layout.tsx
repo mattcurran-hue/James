@@ -24,6 +24,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <NavLink href="/leads">Leads</NavLink>
             <NavLink href="/agents">Agents</NavLink>
             <NavLink href="/lenders">Lenders</NavLink>
+            <NavLink href="/news">News</NavLink>
           </nav>
           <div className="ml-auto flex items-center gap-2">
             {list.length > 0 && <WorkspaceSwitcher list={list} current={current?.slug ?? null} />}

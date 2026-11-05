@@ -114,3 +114,19 @@ export async function testIntake(_prev: { msg: string } | null, formData: FormDa
     return { msg: `Failed: ${e instanceof Error ? e.message : String(e)}` };
   }
 }
+
+// Run Chud on demand from the News page (the cron runs him daily at 6am ET).
+export async function runNewsNow(_prev: { msg: string } | null, formData: FormData) {
+  const sb = await supabaseServer();
+  const { data: aal } = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (aal?.currentLevel !== "aal2") return { msg: "Not signed in." };
+  const days = Number(formData.get("days") ?? 7) || 7;
+  try {
+    const { runChud } = await import("@/lib/agents/chud");
+    const r = await runChud(sb, days);
+    revalidatePath("/news");
+    return { msg: `Chud filed ${r.items} items${r.urgent ? `, ${r.urgent} urgent (on Today)` : ""}.` };
+  } catch (e) {
+    return { msg: `Failed: ${e instanceof Error ? e.message : String(e)}` };
+  }
+}

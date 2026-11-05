@@ -9,7 +9,10 @@ export async function setWorkspace(slug: string) {
   revalidatePath("/", "layout");
 }
 
-// Matt's answer to anything James asks. The card records the decision; the event log feeds learning.
+// Matt's answer to anything James asks. The card records the decision, the event log feeds
+// learning, and some cards trigger the next step (drafting, revising, killing).
+type CardAction = { type?: string; lead_id?: string; draft_id?: string } | null;
+
 export async function decideCard(formData: FormData) {
   const id = String(formData.get("id"));
   const decision = String(formData.get("decision")) as "approved" | "rejected" | "changes_requested";
@@ -18,12 +21,55 @@ export async function decideCard(formData: FormData) {
   const sb = await supabaseServer();
   const { data: card } = await sb.from("cards")
     .update({ status: decision, decision_note: note, decided_at: new Date().toISOString() })
-    .eq("id", id).eq("status", "pending").select("id, workspace_id, kind").single();
-  if (card) {
-    await sb.from("events").insert({
-      workspace_id: card.workspace_id, actor: "matt", entity_type: "card", entity_id: card.id,
-      event_type: `card.${decision}`, payload: { kind: card.kind, note },
-    });
+    .eq("id", id).eq("status", "pending").select("id, workspace_id, kind, entity_type, entity_id, proposed_action").single();
+  if (!card) return revalidatePath("/");
+
+  await sb.from("events").insert({
+    workspace_id: card.workspace_id, actor: "matt", entity_type: "card", entity_id: card.id,
+    event_type: `card.${decision}`, payload: { kind: card.kind, note },
+  });
+
+  const act = card.proposed_action as CardAction;
+  const { draftReply } = await import("@/lib/agents/drafter");
+  try {
+    if (act?.type === "draft_first_reply" && act.lead_id) {
+      if (decision === "rejected") {
+        await sb.from("feedback").insert({ workspace_id: card.workspace_id, entity_type: "lead", entity_id: act.lead_id, rating: "down", reason: note });
+        await sb.from("leads").update({ status: "archived" }).eq("id", act.lead_id);
+      } else {
+        await sb.from("feedback").insert({ workspace_id: card.workspace_id, entity_type: "lead", entity_id: act.lead_id, rating: "up", reason: note });
+        await draftReply(sb, act.lead_id, { guidance: note });
+      }
+    }
+    if (act?.type === "approve_draft" && act.draft_id && act.lead_id) {
+      const { data: draft } = await sb.from("drafts").select("id, version, body").eq("id", act.draft_id).single();
+      if (decision === "approved") {
+        await sb.from("drafts").update({ status: "approved" }).eq("id", act.draft_id);
+      } else if (decision === "changes_requested" && draft) {
+        await sb.from("drafts").update({ status: "changes_requested" }).eq("id", act.draft_id);
+        await draftReply(sb, act.lead_id, { guidance: note, previous: draft });
+      } else {
+        await sb.from("drafts").update({ status: "killed" }).eq("id", act.draft_id);
+        await sb.from("feedback").insert({ workspace_id: card.workspace_id, entity_type: "draft", entity_id: act.draft_id, rating: "down", reason: note });
+      }
+    }
+  } catch (e) {
+    // Put the card back so Matt can retry instead of losing it.
+    await sb.from("cards").update({ status: "pending", decided_at: null }).eq("id", card.id);
+    console.error("card follow-up failed", e);
+  }
+  revalidatePath("/");
+}
+
+// Matt sent an approved draft himself: log it and move the lead to Contacted.
+export async function markSent(formData: FormData) {
+  const id = String(formData.get("draft_id"));
+  const sb = await supabaseServer();
+  const { data: d } = await sb.from("drafts").update({ status: "sent", sent_at: new Date().toISOString() })
+    .eq("id", id).eq("status", "approved").select("workspace_id, lead_id").single();
+  if (d?.lead_id) {
+    await sb.from("leads").update({ stage_key: "contacted", stage_changed_at: new Date().toISOString() }).eq("id", d.lead_id);
+    await sb.from("events").insert({ workspace_id: d.workspace_id, actor: "matt", entity_type: "lead", entity_id: d.lead_id, event_type: "lead.contacted", payload: { draft_id: id } });
   }
   revalidatePath("/");
 }

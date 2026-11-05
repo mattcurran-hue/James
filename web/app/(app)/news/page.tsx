@@ -41,9 +41,16 @@ export default async function News() {
                   <span className="font-medium">{i.title}</span>
                 </div>
                 <p className="mt-2 text-sm">{i.summary}</p>
-                <p className="mt-1 text-sm text-muted">Why it matters: {i.why_it_matters}</p>
-                {i.affects.length > 0 && <p className="mt-1 text-xs text-mustard">Touches: {i.affects.join(", ")}</p>}
-                {i.url && <a href={i.url} target="_blank" rel="noreferrer" className="mt-2 inline-block text-sm text-teal">{i.source ?? "Source"} ↗</a>}
+                <div className="mt-2 rounded-md border border-line bg-panel-2 p-2 text-sm">
+                  <span className="font-medium">What it means for you: </span>{i.why_it_matters}
+                </div>
+                {i.affects.length > 0 && <p className="mt-2 text-xs text-mustard">Touches: {i.affects.join(", ")}</p>}
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                  {i.url && <a href={i.url} target="_blank" rel="noreferrer" className="text-teal">Read: {i.source ?? "article"} ↗</a>}
+                  {(i.more_info ?? []).map((m) => (
+                    <a key={m.url} href={m.url} target="_blank" rel="noreferrer" className="text-muted hover:text-ink">{m.label} ↗</a>
+                  ))}
+                </div>
               </li>
             ))}
           </ul>

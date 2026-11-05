@@ -9,6 +9,7 @@ const STRUCTURE_MODEL = "claude-haiku-5-5";
 
 export type BriefItem = {
   title: string; summary: string; why_it_matters: string; url: string | null; source: string | null;
+  more_info: { label: string; url: string }[];
   category: "regulation" | "funders" | "lawsuits" | "market" | "competitors" | "other";
   impact: "info" | "watch" | "urgent"; affects: string[];
 };
@@ -23,14 +24,20 @@ const BRIEF_SCHEMA = {
       items: {
         type: "object", additionalProperties: false,
         properties: {
-          title: { type: "string" }, summary: { type: "string", description: "2-3 sentences, own words" },
-          why_it_matters: { type: "string", description: "What this means for Batch Capital specifically" },
-          url: { type: ["string", "null"] }, source: { type: ["string", "null"] },
+          title: { type: "string", description: "Plain headline, under 12 words" },
+          summary: { type: "string", description: "Simple breakdown: 2-3 short sentences a busy person gets in 10 seconds. No jargon; explain any term you must use." },
+          why_it_matters: { type: "string", description: "What it means for Matt: concrete and specific to a small NY/NJ broker. Say what (if anything) he should do, e.g. 'stop routing CA files to X', 'nothing to do yet, watch for Y'." },
+          url: { type: ["string", "null"], description: "The main article. Must be a URL that appears in the notes." },
+          source: { type: ["string", "null"], description: "Publication name" },
+          more_info: {
+            type: "array", description: "1-3 places to verify or dig deeper: the bill/regulation text, regulator or court page, the company's own announcement, a deeper trade write-up. Only URLs that appear in the notes; never invent one.",
+            items: { type: "object", additionalProperties: false, properties: { label: { type: "string" }, url: { type: "string" } }, required: ["label", "url"] },
+          },
           category: { type: "string", enum: ["regulation", "funders", "lawsuits", "market", "competitors", "other"] },
           impact: { type: "string", enum: ["info", "watch", "urgent"], description: "urgent = Matt should act or know today (e.g. a panel funder shut down, a new law in a state he funds, a disclosure deadline)" },
           affects: { type: "array", items: { type: "string" }, description: "Lenders on Matt's panel or states this touches" },
         },
-        required: ["title", "summary", "why_it_matters", "url", "source", "category", "impact", "affects"],
+        required: ["title", "summary", "why_it_matters", "url", "source", "more_info", "category", "impact", "affects"],
       },
     },
   },
@@ -47,7 +54,9 @@ async function research(panel: string, sinceDays: number) {
     "3. Lawsuits and enforcement involving funders, brokers, or ISOs.",
     "4. Market: capital raises, securitizations, default trends, industry events (deBanked, etc.).",
     "Prefer primary and trade sources (deBanked, court records, regulator sites, reputable press). Only include things dated within the window. Skip fluff and press-release spam.",
-    "For each item give the date, a short factual summary in your own words, why it matters to a small broker, and the source URL. If nothing material happened in a category, say so in one line.",
+    "For each item give the date, a short factual summary in your own words, what it means for a small NY/NJ broker, the main article URL,",
+    "and also track down primary sources where they exist: the bill or regulation text, the regulator's or court's page, the company's own announcement. Note those URLs too.",
+    "If nothing material happened in a category, say so in one line.",
     `\nMatt's lender panel:\n${panel}`,
   ].join("\n");
 
@@ -73,7 +82,7 @@ async function structure(notes: string) {
   const client = new Anthropic();
   const msg = await client.messages.create({
     model: STRUCTURE_MODEL, max_tokens: 8000,
-    system: "Turn these research notes into Matt's brief. Keep only real, dated, sourced items. Use the notes' own facts; do not add any. Paraphrase; never copy sentences from sources.",
+    system: "Turn these research notes into Matt's brief. Keep only real, dated, sourced items. Use the notes' own facts; do not add any. Write simply, like explaining to a sharp friend in 10 seconds. Paraphrase; never copy sentences from sources. Every URL you output must appear verbatim in the notes.",
     output_config: { effort: "low", format: { type: "json_schema", schema: BRIEF_SCHEMA } },
     messages: [{ role: "user", content: notes }],
   });

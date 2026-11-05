@@ -3,6 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { BRAINS } from "@/lib/brains.generated";
 import { review } from "./bank-manager";
+import { costOf } from "./cost";
 
 // The Paperboy (Reddit Scout): reads F5Bot alert emails, pulls out each Reddit hit,
 // triages it cheaply, and sends real candidates to the Bank Manager for a full review.
@@ -77,11 +78,11 @@ export async function processAlertEmails(sb: SupabaseClient, emails: { subject?:
     agent_id: scout, workspace_id: ws.id, status: "running", started_at: new Date().toISOString(),
   }).select("id").single();
 
-  let found = 0, reviewed = 0, promoted = 0, tokensIn = 0, tokensOut = 0;
+  let found = 0, reviewed = 0, promoted = 0, tokensIn = 0, tokensOut = 0, cost = 0;
   try {
     const text = emails.map((e) => `Subject: ${e.subject ?? ""}\n${e.body}`).join("\n\n-----\n\n");
     const { hits, usage } = await extractHits(text);
-    tokensIn += usage.input_tokens; tokensOut += usage.output_tokens;
+    tokensIn += usage.input_tokens; tokensOut += usage.output_tokens; cost += costOf(TRIAGE_MODEL, usage);
     found = hits.length;
 
     await pool(hits, 4, async (h) => {
@@ -104,8 +105,8 @@ export async function processAlertEmails(sb: SupabaseClient, emails: { subject?:
         `URL: ${h.url}`, h.title ? `Title: ${h.title}` : null, `Matched keyword: ${h.keyword ?? "?"}`,
         `Text (alert excerpt only, full post not fetched):\n${h.snippet}`,
       ].filter(Boolean).join("\n");
-      const { review: r, usage: u } = await review(sb, ws.id, "Reddit post found by the Paperboy (outbound; they did NOT contact us)", submission);
-      reviewed++; tokensIn += u.input_tokens; tokensOut += u.output_tokens;
+      const { review: r, usage: u, cost: c } = await review(sb, ws.id, "Reddit post found by the Paperboy (outbound; they did NOT contact us)", submission);
+      reviewed++; tokensIn += u.input_tokens; tokensOut += u.output_tokens; cost += c;
 
       // Outbound finds use the Lead Brain rubric as written: 8+ queue, 6-7.9 maybe, 5 and under tossed.
       const status = r.disqualified || r.score < 6 ? "discarded" : r.score >= 8 ? "promoted" : "maybe";
@@ -144,7 +145,7 @@ export async function processAlertEmails(sb: SupabaseClient, emails: { subject?:
 
     if (run) await sb.from("agent_runs").update({
       status: "succeeded", finished_at: new Date().toISOString(), items_found: found, items_promoted: promoted,
-      tokens_in: tokensIn, tokens_out: tokensOut,
+      tokens_in: tokensIn, tokens_out: tokensOut, cost_usd: cost,
       summary: `${found} hits, ${reviewed} reviewed, ${promoted} to your queue`,
     }).eq("id", run.id);
     return { found, reviewed, promoted };

@@ -1,6 +1,6 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import { loadWorkspaces } from "@/lib/workspace";
-import { ago } from "@/lib/format";
+import { ago, hoursAgoIso } from "@/lib/format";
 
 type Agent = { id: string; name: string; character: string | null; role: string; enabled: boolean; workspace_id: string | null; config: { phase?: number; needs?: string } };
 type Run = { agent_id: string; status: string; summary: string | null; created_at: string; items_found: number; items_promoted: number };
@@ -10,18 +10,32 @@ const ROLE_ORDER = ["james", "head_boss", "town_boss", "worker"];
 export default async function Agents() {
   const sb = await supabaseServer();
   const { current } = await loadWorkspaces(sb);
-  const [{ data: a }, { data: r }] = await Promise.all([
+  const [{ data: a }, { data: r }, { data: spend }] = await Promise.all([
     sb.from("agents").select("id, name, character, role, enabled, workspace_id, config")
       .or(`workspace_id.eq.${current!.id},workspace_id.is.null`),
     sb.from("agent_runs").select("agent_id, status, summary, created_at, items_found, items_promoted")
       .order("created_at", { ascending: false }).limit(300),
+    sb.from("agent_runs").select("cost_usd, created_at").gte("created_at", hoursAgoIso(24 * 30)),
   ]);
+  const sum = (h: number) => (spend ?? [])
+    .filter((x) => new Date(x.created_at).getTime() >= Date.now() - h * 3600e3)
+    .reduce((t, x) => t + Number(x.cost_usd ?? 0), 0);
+  const fmt = (n: number) => `$${n < 10 ? n.toFixed(2) : n.toFixed(0)}`;
   const agents = ((a ?? []) as Agent[]).sort((x, y) =>
     ROLE_ORDER.indexOf(x.role) - ROLE_ORDER.indexOf(y.role) || (x.config.phase ?? 9) - (y.config.phase ?? 9));
   const last = new Map<string, Run>();
   for (const run of (r ?? []) as Run[]) if (!last.has(run.agent_id)) last.set(run.agent_id, run);
 
   return (
+    <div className="space-y-4">
+    <div className="grid grid-cols-3 gap-3">
+      {[["Today", 24], ["7 days", 168], ["30 days", 720]].map(([label, h]) => (
+        <div key={label} className="card">
+          <div className="text-2xl font-semibold">{fmt(sum(h as number))}</div>
+          <div className="text-xs text-muted">API spend · {label}</div>
+        </div>
+      ))}
+    </div>
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {agents.map((ag) => {
         const run = last.get(ag.id);
@@ -44,6 +58,7 @@ export default async function Agents() {
           </div>
         );
       })}
+    </div>
     </div>
   );
 }

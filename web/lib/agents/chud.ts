@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { MODEL } from "./bank-manager";
+import { costOf } from "./cost";
 
 // Chud (The Town Crier): keeps Matt current on the MCA world. Researches with live web
 // search, then files a structured brief. Silent unless something needs Matt's attention now.
@@ -62,6 +63,7 @@ async function research(panel: string, sinceDays: number) {
 
   let messages: Anthropic.MessageParam[] = [{ role: "user", content: `Today is ${new Date().toISOString().slice(0, 10)}. Write the brief research notes.` }];
   let usage = { input_tokens: 0, output_tokens: 0 };
+  let cost = 0;
   for (let i = 0; i < 4; i++) {
     const msg = await client.messages.create({
       model: MODEL, max_tokens: 12000, system, messages,
@@ -69,11 +71,12 @@ async function research(panel: string, sinceDays: number) {
       output_config: { effort: "medium" },
     });
     usage = { input_tokens: usage.input_tokens + msg.usage.input_tokens, output_tokens: usage.output_tokens + msg.usage.output_tokens };
+    cost += costOf(MODEL, msg.usage);
     if (msg.stop_reason === "pause_turn") { messages = [...messages, { role: "assistant", content: msg.content }]; continue; }
     const text = msg.content.filter((b) => b.type === "text").map((b) => (b as Anthropic.TextBlock).text).join("\n");
     const urls = msg.content.flatMap((b) => b.type === "web_search_tool_result" && Array.isArray(b.content)
       ? b.content.map((r) => `${r.title} — ${r.url}`) : []);
-    return { notes: `${text}\n\nSources seen:\n${urls.join("\n")}`, usage };
+    return { notes: `${text}\n\nSources seen:\n${urls.join("\n")}`, usage, cost };
   }
   throw new Error("Research did not finish");
 }
@@ -88,7 +91,7 @@ async function structure(notes: string) {
   });
   const block = msg.content.find((b) => b.type === "text");
   if (!block || block.type !== "text") throw new Error("No brief returned");
-  return { brief: JSON.parse(block.text) as Brief, usage: msg.usage };
+  return { brief: JSON.parse(block.text) as Brief, usage: msg.usage, cost: costOf(STRUCTURE_MODEL, msg.usage) };
 }
 
 export async function runChud(sb: SupabaseClient, sinceDays = 1) {
@@ -136,6 +139,7 @@ export async function runChud(sb: SupabaseClient, sinceDays = 1) {
     if (run) await sb.from("agent_runs").update({
       status: "succeeded", finished_at: new Date().toISOString(), items_found: brief.items.length, items_promoted: urgent,
       tokens_in: r.usage.input_tokens + s.usage.input_tokens, tokens_out: r.usage.output_tokens + s.usage.output_tokens,
+      cost_usd: r.cost + s.cost,
       summary: `${brief.items.length} items${urgent ? `, ${urgent} urgent` : ""}: ${brief.headline}`.slice(0, 300),
     }).eq("id", run.id);
     return { items: brief.items.length, urgent };

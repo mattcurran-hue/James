@@ -49,7 +49,7 @@ export async function processIntake(raw: Record<string, unknown>, origin: "web_f
     }
     if (dupErr) throw dupErr;
 
-    const { review: r, usage } = await review(sb, ws.id, origin === "test" ? "Website contact form (TEST)" : "Website contact form (batchgroup.co/contact)", text);
+    const { review: r, usage, cost } = await review(sb, ws.id, origin === "test" ? "Website contact form (TEST)" : "Website contact form (batchgroup.co/contact)", text);
 
     // Inbound leads reached out to us, so nothing from the site gets silently tossed:
     // 8+ is urgent, 6-7.9 goes to the queue, under 6 waits in Maybe, disqualified is archived with a reason.
@@ -91,7 +91,7 @@ export async function processIntake(raw: Record<string, unknown>, origin: "web_f
 
     await finish({
       status: "succeeded", items_found: 1, items_promoted: status === "promoted" ? 1 : 0,
-      tokens_in: usage.input_tokens, tokens_out: usage.output_tokens,
+      tokens_in: usage.input_tokens, tokens_out: usage.output_tokens, cost_usd: cost,
       summary: `${r.company || r.name || "Lead"} scored ${r.score} → ${status}`,
     });
     return { ok: true as const, lead_id: lead!.id, score: r.score, status };

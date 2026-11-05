@@ -27,7 +27,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </nav>
           <div className="ml-auto flex items-center gap-2">
             {list.length > 0 && <WorkspaceSwitcher list={list} current={current?.slug ?? null} />}
-            <form action={signOut}><button className="btn">Sign out</button></form>
+            <form action={signOut}><button className="btn whitespace-nowrap">Sign out</button></form>
           </div>
         </div>
       </header>

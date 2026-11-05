@@ -2,8 +2,8 @@
 type: agent-brain
 owner: Matt Curran
 applies_to: [reddit-scout, facebook-scout, head-reviewer]
-version: 0.1
-updated: 2026-11-04
+version: 0.2
+updated: 2026-11-05
 ---
 
 # Lead Brain — Batch Capital
@@ -33,18 +33,32 @@ updated: 2026-11-04
 - "equipment financing", "buy out a truck/machine", "line of credit for my business"
 - Frustration with current processor fees → processing angle
 
-**Sweet-spot targets** (**TODO**, confirm numbers)
-- Time in business: 6+ months
-- Monthly deposits: $15k+ (lower-revenue merchants are a known funder gap, so still surface them but flag them)
-- Industries: restaurants, trucking, construction/contractors, retail, auto repair, medical/dental, salons
+**Minimums and sweet spot** (source of truth: `data/lender-parameters.json`)
+- **Universal floor (fundable by at least one live lender):** 6+ months in business, $15K+/mo true revenue, 500+ FICO, 3+ deposits/month
+- **Sweet spot (most lenders):** 12+ months, $30K+/mo, 550+ FICO, 5 or fewer negative days/month, 1st–4th position
+- **Preferred industries:** restaurants, retail, medical/healthcare, HVAC, plumbing, electrical, home services, salons, e-commerce, distributors, logistics, nursing homes, franchises
+- Revenue, FICO, negative days and positions only show up in bank statements and the app. **Agent scores are pre-qualification, never approval.**
+
+**Segments (tag every merchant lead with the ones that fit)**
+1. Clean / low-cost (A–B): 12+ mo, $21K+/mo, 600+ FICO, not construction/trucking
+2. Stacked B/C (2nd–4th): already using MCAs, 6–12+ mo, $25K+/mo
+3. Low revenue: 6+ mo, $15K–$25K/mo
+4. Texas: route to Mint / Merchant Marketplace (Malka high-risk, MCHQ last resort)
+5. High risk: heavily stacked, past defaults, 2nd position or deeper
+6. Reverse consolidation: 3+ positions, still paying, $50K+ need, not CA/TX
+7. Term / SBA (LendCap): 24+ mo, $29K+/mo, positive cash flow, taxes filed
+8. Equipment (Navitas): buying specific equipment, decent credit
 
 **Flag but don't kill**
-- Texas merchants, high-risk 1st position, low revenue, 7th–10th position stacking. These are known **funder gaps** right now; tag `gap:` so Matt knows.
+- Texas and California merchants (excluded by many lenders; tag the segment so routing is obvious)
+- Trucking and construction (often restricted; need higher revenue or time in business)
 
 **Disqualify**
 - Startups with no revenue, side hustles, personal loans
 - Other brokers or ISOs fishing for deals
-- Crypto, cannabis, MLM, gambling (**TODO**, confirm full restricted list)
+- **Almost always restricted:** cannabis, auto sales/dealerships, financial services/lenders/brokers, open bankruptcy
+- **Case by case (flag, don't kill):** law firms, real estate, solar, staffing, non-profits
+- Under 6 months in business or under $15K/mo when the post states it
 - Posts older than 14 days, unless still active in the comments
 - Anything that reads like a scam or fake distress post
 
@@ -53,11 +67,11 @@ updated: 2026-11-04
 ## Lead type 2 — Lenders / funders
 
 **What we want**
-- Direct funders or ISO desks that accept outside ISOs, especially ones that cover our gaps:
-  - **Texas** merchants
-  - **High-risk 1st position**
-  - **Low-revenue** merchants
-  - **7th–10th position**
+- Direct funders or ISO desks that accept outside ISOs, especially ones that cover our thin spots:
+  - **Texas and California** (only Mint and Merchant Marketplace cover TX cleanly)
+  - **Low revenue** ($15K–$25K/mo; only Main Capital C paper (pending) and Lendini today)
+  - **High-risk 1st position** (Malka doesn't do 1st)
+  - **Trucking and construction** at normal revenue levels
 - Term / SBA / equipment lenders open to referral or ISO deals
 
 **Green flags**
@@ -65,11 +79,11 @@ updated: 2026-11-04
 - Clawback tied to the payment count, which we can live with. Short-window clawbacks (e.g. 30 days) conflict with our policy.
 
 **Red flags (tag, don't promote)**
-- Processor-locked / split-funding-only products
+- Processor-locked / split-funding-only products, or permanent processing locks (Merchant Cash HQ is last-resort for this reason)
 - Post-term non-competes, perpetual merchant restrictions, broker personal guarantee
 
 **Already in the network — do NOT surface as new**
-Liquidity Access, South End Capital/Stearns Bank, Smart Step Funding, Vox Funding, Velocity Capital Group, Lendini/QuickFix, CFG Merchant Solutions, BusinessFunds.com, Fundomate, Merchant Cash HQ, Lendcap, Pathway Funding, Malka Advance, Lexio Capital, Preferred Funding Group, Xpress Lend, The Merchant Marketplace, TMRNOW, Navitas Credit, Columbia Bank
+Sentient Capital (Xpress Lend), Capital Minutes, Mint Funding, The Merchant Marketplace, Pathway Funding, Lendini, Quick Fix Capital, Malka Advance, Merchant Cash HQ, LendCap, Navitas Credit, TMR Now, Main Capital, Belltower Funding, Lifetime Funding, Blue Sky Advance (VPS), Blade Funding, Liquidity Access, South End Capital/Stearns Bank, Smart Step Funding, Vox Funding, Velocity Capital Group, CFG Merchant Solutions, BusinessFunds.com, Fundomate, Preferred Funding Group, Lexio Capital, Columbia Bank
 
 **Already passed / dropped — do NOT surface**
 Cashable, 1st Alliance Group, Splash Advance, Biz Capital Miami, Fenix Capital Funding, Libertas Funding
@@ -117,7 +131,9 @@ Vader, ByzFunder, Fox, Bitty
 - **6–7:** Hold in "maybe" for weekly review
 - **≤5:** Discard, but log the reason so the scouts learn
 
-The reviewer adds a one-line **suggested opener** for every promoted lead (Matt edits before sending), and never claims we lend.
+The reviewer adds a one-line **suggested opener** for every promoted lead (Matt edits before sending).
+
+**Outreach compliance (applies to every draft):** opt-in or B2B-permitted channels only; TCPA for calls/texts (no auto-dialed texts to cell phones without consent); CAN-SPAM for email; never say "pre-approved," "guaranteed," "we lend," or "direct lender."
 
 ---
 

@@ -32,6 +32,7 @@ supabase/
 5. Observer, once CRM read access exists
 
 ## Setup
-1. Create a Supabase project, run `supabase/migrations/0001_init.sql`, then `supabase/seed.sql`.
+1. Create a Supabase project and run, in order: `supabase/migrations/0001_init.sql`, `0002_lender_params.sql`, `supabase/seed.sql`, `supabase/seed_lenders.sql`.
+   - Lender data lives in `data/lender-parameters.json`. After editing it, run `python3 scripts/build_lender_seed.py` and re-run `seed_lenders.sql` (safe to re-run; it updates in place).
 2. Add yourself to every workspace (see the comment at the top of seed.sql).
 3. Secrets go in Vercel env vars or a local `.env`, never in the repo.

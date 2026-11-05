@@ -80,42 +80,7 @@ join (values
   ('batch-marketing','cross-sell','Cross-Sell Agent','The Billboard Painter',null,'{"phase":3}')
 ) as a(ws, slug, name, ch, cron, cfg) on a.ws = w.slug;
 
--- Batch Capital lender panel (from the Lead Brain, Nov 2026)
-insert into lenders (workspace_id, name, status, submission_email, notes)
-select w.id, l.name, l.status::lender_status, l.email, l.notes
-from workspaces w
-join (values
-  ('Liquidity Access','signed',null,null),
-  ('South End Capital / Stearns Bank','signed',null,null),
-  ('Smart Step Funding','signed',null,'Total Deposits Advance only; no Credit Card Advance (processor-locked)'),
-  ('Vox Funding','signed',null,null),
-  ('Velocity Capital Group','signed',null,null),
-  ('Lendini / QuickFix Capital','signed',null,null),
-  ('CFG Merchant Solutions','signed','SGould@cfgms.com',null),
-  ('BusinessFunds.com','signed',null,'Specialty / low-bar term outlet'),
-  ('Fundomate','signed',null,'Submit via portal'),
-  ('Merchant Cash HQ','signed','Lisa@merchantcashhq.com','CC Deals@ and Vincent@; last-resort outlet'),
-  ('Lendcap','signed','submissions@lendcapsolutions.com','SBA/term only, not MCA; CC eric@'),
-  ('Pathway Funding','signed','subs@pathwayfunding.com',null),
-  ('Malka Advance','signed','Deals@malkaadvance.com',null),
-  ('Lexio Capital','negotiating',null,'Asked for processing carve-out in §10'),
-  ('Preferred Funding Group','signed',null,'Affiliate'),
-  ('Xpress Lend (Sentient Capital Group)','signed',null,null),
-  ('The Merchant Marketplace','negotiating',null,'Agreed to redlines; addendum pending'),
-  ('TMRNOW (Total Merchant Resources)','negotiating',null,'Weighing ISO agreement'),
-  ('Navitas Credit','negotiating',null,null),
-  ('Columbia Bank','signed',null,'Two-way referral'),
-  ('Cashable','dropped',null,'30-day clawback conflict'),
-  ('1st Alliance Group','passed',null,null),
-  ('Splash Advance','passed',null,null),
-  ('Biz Capital Miami','passed',null,null),
-  ('Fenix Capital Funding','passed',null,null),
-  ('Libertas Funding','passed',null,null),
-  ('Vader','contacted',null,'No reply yet'),
-  ('ByzFunder','contacted',null,'No reply yet'),
-  ('Fox','contacted',null,'No reply yet'),
-  ('Bitty','contacted',null,'No reply yet')
-) as l(name, status, email, notes) on w.slug = 'batch-capital';
+-- Lenders + segments: see seed_lenders.sql (generated from data/lender-parameters.json)
 
 -- Starter Reddit watch list (to verify)
 insert into sources (workspace_id, platform, identifier)

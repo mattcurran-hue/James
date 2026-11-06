@@ -27,7 +27,7 @@ updated: 2026-11-05
 - PC: view only (ActivityWatch). No AI control of the PC.
 
 ## Open items
-- [ ] CRM API docs + read-only key → build the Observer
+- [ ] CRM API docs + read-only key → build the Observer and the auto-updating daily checklist (see 02-Daily-Checklist-Spec)
 - [ ] Facebook groups list → Lead Brain watch list → Facebook scout
 - [ ] Spare number for the WhatsApp scout
 - [ ] Head Boss (after 1–2 weeks of real yes/no history)

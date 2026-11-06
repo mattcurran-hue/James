@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-05",
+  "updated": "2026-11-06",
   "lenders": [
     {
       "lender": "Sentient Capital (Xpress Lend)",
@@ -35,7 +35,8 @@
       "states_excluded": "TX, CA",
       "restricted_industries": "Auto sales, real estate (except mgmt), loan-related financial services, lawyers (unless strong history), cell phone sales",
       "required_stips": "App; bank statements; full financials (P&L, balance sheet, tax returns)",
-      "notes": "Buy 1.28."
+      "notes": "Buy 1.28.",
+      "submission_email": "funding@capitalminutes.com"
     },
     {
       "lender": "Capital Minutes - Gold",
@@ -53,7 +54,8 @@
       "states_excluded": "TX, CA",
       "restricted_industries": "Same as Platinum",
       "required_stips": "App; bank statements",
-      "notes": "Buy 1.30. No financials."
+      "notes": "Buy 1.30. No financials.",
+      "submission_email": "funding@capitalminutes.com"
     },
     {
       "lender": "Capital Minutes - Silver",
@@ -71,7 +73,8 @@
       "states_excluded": "TX, CA",
       "restricted_industries": "Same as Platinum",
       "required_stips": "App; bank statements",
-      "notes": "Buy 1.33. No financials."
+      "notes": "Buy 1.33. No financials.",
+      "submission_email": "funding@capitalminutes.com"
     },
     {
       "lender": "Mint Funding",
@@ -89,7 +92,7 @@
       "states_excluded": "None (all 50 incl TX)",
       "restricted_industries": "Case-by-case: financial services, law firms, auto sales, real estate, non-profit, cannabis, solar, staffing",
       "required_stips": "App; 3 most recent statements (4 if NY/CA); payoff letters if applicable",
-      "notes": "12 months bank history; existing leverage <35%; 4+ deposits/mo; 550 FICO for 1st position."
+      "notes": "12 months bank history; existing leverage <35%; 4+ deposits/mo; 550 FICO for 1st position. To confirm: what counts as a 'low' day; weekly pay."
     },
     {
       "lender": "The Merchant Marketplace",
@@ -107,7 +110,7 @@
       "states_excluded": "None (all 50 incl TX/CA)",
       "restricted_industries": "CA sole proprietors; auto sales",
       "required_stips": "App; bank statements (minimal stips)",
-      "notes": "Soft credit pull. 5+ deposits/mo. Trucking OK. Revenue minimum not stated."
+      "notes": "Soft credit pull. 5+ deposits/mo. Trucking OK. Revenue minimum not stated. To confirm: revenue minimum and the $500 rule."
     },
     {
       "lender": "Pathway Funding",
@@ -218,7 +221,7 @@
       "states_excluded": "None",
       "restricted_industries": "Not stated",
       "required_stips": "3 yrs business tax returns; most recent personal return; active business license; 3 months statements; app. Equipment: invoice. RE: appraisal, deed, mortgage stmt.",
-      "notes": "$350K+ annual revenue. 2-3 weeks to close. Rates from 0.5%/mo.",
+      "notes": "$350K+ annual revenue. 2-3 weeks to close. Rates from 0.5%/mo. Contact Spencer Adler.",
       "submission_email": "submissions@lendcapsolutions.com"
     },
     {
@@ -241,7 +244,7 @@
     },
     {
       "lender": "TMR Now",
-      "status": "Pending (redline s7)",
+      "status": "Pending (redlines sent)",
       "product": "MCA",
       "paper": "B-C (likes B/C)",
       "positions": "1st-3rd",
@@ -255,11 +258,11 @@
       "states_excluded": "UT/VA need ~$50K/mo",
       "restricted_industries": "Vehicles, wholesalers, manufacturers need tax returns; trucking needs 3+ trucks",
       "required_stips": "4 full months statements; app with wet or verified signature",
-      "notes": "Hard pull only. 1st position 3 mo TIB; stacks 6 mo. 30-day wait after new fundings. Max 25% gross reserve."
+      "notes": "Hard pull only. 1st position 3 mo TIB; stacks 6 mo. 30-day wait after new fundings. Max 25% gross reserve. Rep says non-compete only covers MCAs to merchants TMR funded; needs it in writing."
     },
     {
       "lender": "Main Capital - B paper",
-      "status": "Pending (redlines)",
+      "status": "Pending (redlines sent)",
       "product": "MCA",
       "paper": "B",
       "positions": "1st-4th",
@@ -277,7 +280,7 @@
     },
     {
       "lender": "Main Capital - C paper",
-      "status": "Pending (redlines)",
+      "status": "Pending (redlines sent)",
       "product": "MCA",
       "paper": "C",
       "positions": "1st-4th",
@@ -295,7 +298,7 @@
     },
     {
       "lender": "Belltower Funding",
-      "status": "Pending (PG/lien)",
+      "status": "Pending (redlines sent)",
       "product": "MCA",
       "paper": "B-C",
       "positions": "2nd-5th (1st w/ recent MCA history)",
@@ -313,7 +316,7 @@
     },
     {
       "lender": "Lifetime Funding",
-      "status": "Pending (s7)",
+      "status": "Live",
       "product": "MCA",
       "paper": "B-C",
       "positions": "2nd-10th",
@@ -327,11 +330,12 @@
       "states_excluded": "TX trucking/construction need $250K+",
       "restricted_industries": "Auto sales; BK in last 7 yrs",
       "required_stips": "Manual bank login / screen share verification",
-      "notes": "Min term 60 days. Satisfied defaults considered."
+      "notes": "Min term 60 days. Satisfied defaults considered. Signed Nov 6 (s7 and s5(H) deleted). 12-13 pts at 1.49 factor. To confirm: min revenue $70K vs $60K; TX trucking/construction $250K vs $300K; commission timing 3 vs 30 days.",
+      "submission_email": "eman@lifetimefundingllc.com"
     },
     {
       "lender": "Blue Sky Advance (VPS)",
-      "status": "Pending (PG)",
+      "status": "Pending (refuses to drop PG)",
       "product": "Reverse consolidation only",
       "paper": "Stacked, performing",
       "positions": "Several existing",
@@ -561,6 +565,36 @@
       "status": "Contacted",
       "submission_email": null,
       "notes": "No reply yet"
+    },
+    {
+      "lender": "800 Funding",
+      "status": "Pending (redlines drafted)",
+      "submission_email": null,
+      "notes": "Law-firm template + blank commission schedule. Up to 15 pts, 1 yr TIB, 1st position with prior payment history, settled defaults OK. Texas OK if extra clean (weekly ACH). Weed shops OK if they take cards, never through Batch processing. Bans pawn, payday, nonprofit, telemarketing, credit repair, auto sales, gambling, ticket brokers. Min revenue unconfirmed ($70K flyer vs ~$40K rep)."
+    },
+    {
+      "lender": "SBF",
+      "status": "Pending (redlines sent)",
+      "submission_email": null,
+      "notes": "Law-firm template (PG, s19 lien, account freezes). Asked to strike PG and lien, offered pay-after-clawback."
+    },
+    {
+      "lender": "Credia Capital",
+      "status": "Pending (redlines sent)",
+      "submission_email": null,
+      "notes": "Law-firm template (PG, s19 lien, account freezes). Asked to strike PG and lien, offered pay-after-clawback."
+    },
+    {
+      "lender": "Royalty",
+      "status": "Pending (redlines sent)",
+      "submission_email": null,
+      "notes": "Law-firm template (PG, s19 lien, account freezes). Asked to strike PG and lien, offered pay-after-clawback."
+    },
+    {
+      "lender": "Harbor View",
+      "status": "Pending (under review)",
+      "submission_email": null,
+      "notes": "Guidelines and agreement received; under review."
     }
   ]
 }

@@ -125,7 +125,8 @@
       "states_excluded": "TX",
       "restricted_industries": "None listed",
       "required_stips": "App; bank statements",
-      "notes": "Standard 1.499 + 7% fee. High daily balances help."
+      "notes": "Standard 1.499 + 7% fee. High daily balances help.",
+      "submission_email": "subs@pathwayfunding.com"
     },
     {
       "lender": "Lendini",
@@ -179,7 +180,8 @@
       "states_excluded": "None (incl TX)",
       "restricted_industries": "Trucking/construction need $50K+/mo",
       "required_stips": "App; bank statements",
-      "notes": "Holdback cap ~65%. Reverse consolidations."
+      "notes": "Holdback cap ~65%. Reverse consolidations.",
+      "submission_email": "Deals@malkaadvance.com"
     },
     {
       "lender": "Merchant Cash HQ",
@@ -197,7 +199,8 @@
       "states_excluded": "None (incl TX, CA, PR, Canada)",
       "restricted_industries": "None",
       "required_stips": "App; bank statements",
-      "notes": "PERMANENT processing lock on funded merchants - last resort only."
+      "notes": "PERMANENT processing lock on funded merchants - last resort only.",
+      "submission_email": "Lisa@merchantcashhq.com"
     },
     {
       "lender": "LendCap",
@@ -215,7 +218,8 @@
       "states_excluded": "None",
       "restricted_industries": "Not stated",
       "required_stips": "3 yrs business tax returns; most recent personal return; active business license; 3 months statements; app. Equipment: invoice. RE: appraisal, deed, mortgage stmt.",
-      "notes": "$350K+ annual revenue. 2-3 weeks to close. Rates from 0.5%/mo."
+      "notes": "$350K+ annual revenue. 2-3 weeks to close. Rates from 0.5%/mo.",
+      "submission_email": "submissions@lendcapsolutions.com"
     },
     {
       "lender": "Navitas Credit",
@@ -429,6 +433,134 @@
     "State notes": "Texas and California are excluded by many lenders - route TX to Mint/MMP; North Dakota restricted (Lendini); UT/VA need ~$50K/mo (TMR); NY/CA need 4 months of statements at several lenders",
     "What the agent can and can't see": "Public data shows TIB, location, industry, size proxies and UCC filings. Revenue, FICO, negative days and positions are confirmed only from bank statements and the application - treat agent scores as a pre-qualification, not an approval.",
     "Outreach compliance": "Use opt-in or B2B-permitted channels; follow TCPA for calls/texts (no auto-dialed texts to cell phones without consent) and CAN-SPAM for email; never say 'pre-approved' or 'guaranteed'; Batch is a broker, never 'direct lender'.",
-    "Status key": "Live = signed, can submit. Pending = redlines out, don't submit yet. Not signed = do not route. Lenders with params not on file (Fundomate, Velocity, Liquidity Access, South End, CFG, Smart Step, Vox, BusinessFunds, PFG) are omitted until guidelines are collected."
-  }
+    "Status key": "Live = signed, can submit. Pending = redlines out, don't submit yet. Not signed = do not route. Statuses for lenders/other_lenders: Live, Live (note), Pending (note), In setup, Not signed, Contacted, Passed, Dropped. Lenders without guidelines on file go in other_lenders until their params are collected."
+  },
+  "other_lenders": [
+    {
+      "lender": "Fundomate",
+      "status": "Live",
+      "submission_email": null,
+      "notes": "Submit via portal; params not on file"
+    },
+    {
+      "lender": "Velocity Capital Group",
+      "status": "Live",
+      "submission_email": null,
+      "notes": "B/C lender; params not on file"
+    },
+    {
+      "lender": "Liquidity Access",
+      "status": "Live",
+      "submission_email": null,
+      "notes": "Params not on file"
+    },
+    {
+      "lender": "South End Capital / Stearns Bank",
+      "status": "Live",
+      "submission_email": null,
+      "notes": "Params not on file"
+    },
+    {
+      "lender": "CFG Merchant Solutions",
+      "status": "Live",
+      "submission_email": "SGould@cfgms.com",
+      "notes": "Params not on file"
+    },
+    {
+      "lender": "Smart Step Funding",
+      "status": "Live",
+      "submission_email": null,
+      "notes": "Total Deposits Advance only; no Credit Card Advance (processor-locked); params not on file"
+    },
+    {
+      "lender": "Vox Funding",
+      "status": "Live",
+      "submission_email": null,
+      "notes": "Params not on file"
+    },
+    {
+      "lender": "BusinessFunds.com",
+      "status": "Live",
+      "submission_email": null,
+      "notes": "Specialty / low-bar term outlet; params not on file"
+    },
+    {
+      "lender": "Preferred Funding Group",
+      "status": "Live",
+      "submission_email": null,
+      "notes": "Affiliate; params not on file"
+    },
+    {
+      "lender": "Columbia Bank",
+      "status": "Live",
+      "submission_email": null,
+      "notes": "Two-way referral (bank declines in, too-clean files out)"
+    },
+    {
+      "lender": "Lexio Capital",
+      "status": "Pending",
+      "submission_email": null,
+      "notes": "Asked for processing carve-out in s10"
+    },
+    {
+      "lender": "Cashable",
+      "status": "Dropped",
+      "submission_email": null,
+      "notes": "30-day clawback conflict"
+    },
+    {
+      "lender": "1st Alliance Group",
+      "status": "Passed",
+      "submission_email": null,
+      "notes": null
+    },
+    {
+      "lender": "Splash Advance",
+      "status": "Passed",
+      "submission_email": null,
+      "notes": null
+    },
+    {
+      "lender": "Biz Capital Miami",
+      "status": "Passed",
+      "submission_email": null,
+      "notes": null
+    },
+    {
+      "lender": "Fenix Capital Funding",
+      "status": "Passed",
+      "submission_email": null,
+      "notes": null
+    },
+    {
+      "lender": "Libertas Funding",
+      "status": "Passed",
+      "submission_email": null,
+      "notes": null
+    },
+    {
+      "lender": "Vader",
+      "status": "Contacted",
+      "submission_email": null,
+      "notes": "No reply yet"
+    },
+    {
+      "lender": "ByzFunder",
+      "status": "Contacted",
+      "submission_email": null,
+      "notes": "No reply yet"
+    },
+    {
+      "lender": "Fox",
+      "status": "Contacted",
+      "submission_email": null,
+      "notes": "No reply yet"
+    },
+    {
+      "lender": "Bitty",
+      "status": "Contacted",
+      "submission_email": null,
+      "notes": "No reply yet"
+    }
+  ]
 }

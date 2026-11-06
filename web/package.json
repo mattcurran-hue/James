@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "prebuild": "node scripts/bundle-brains.mjs",
+    "prebuild": "node scripts/bundle-brains.mjs && node scripts/sync-lenders.mjs",
     "predev": "node scripts/bundle-brains.mjs"
   },
   "dependencies": {

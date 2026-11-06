@@ -1,4 +1,5 @@
-"""Generate supabase/seed_lenders.sql from data/lender-parameters.json.
+"""Generate supabase/seed_lenders.sql from data/lender-parameters.json (manual fallback;
+the web build syncs lenders automatically via web/scripts/sync-lenders.mjs).
 
 Run after editing the JSON:  python3 scripts/build_lender_seed.py
 The JSON (or the matching spreadsheet) is the source of truth for lender params.
@@ -26,38 +27,16 @@ def status_of(raw):
         return "prospect"
     return "prospect"
 
-# Lenders in the network with no parameters on file yet, plus passed/dropped/contacted.
-# (name, status, submission_email, notes)
-extra = [
-    ("Fundomate", "signed", None, "Submit via portal; params not on file"),
-    ("Velocity Capital Group", "signed", None, "Params not on file"),
-    ("Liquidity Access", "signed", None, "Params not on file"),
-    ("South End Capital / Stearns Bank", "signed", None, "Params not on file"),
-    ("CFG Merchant Solutions", "signed", "SGould@cfgms.com", "Params not on file"),
-    ("Smart Step Funding", "signed", None, "Total Deposits Advance only; no Credit Card Advance (processor-locked); params not on file"),
-    ("Vox Funding", "signed", None, "Params not on file"),
-    ("BusinessFunds.com", "signed", None, "Specialty / low-bar term outlet; params not on file"),
-    ("Preferred Funding Group", "signed", None, "Affiliate; params not on file"),
-    ("Columbia Bank", "signed", None, "Two-way referral (bank declines in, too-clean files out)"),
-    ("Lexio Capital", "negotiating", None, "Asked for processing carve-out in s10"),
-    ("Cashable", "dropped", None, "30-day clawback conflict"),
-    ("1st Alliance Group", "passed", None, None),
-    ("Splash Advance", "passed", None, None),
-    ("Biz Capital Miami", "passed", None, None),
-    ("Fenix Capital Funding", "passed", None, None),
-    ("Libertas Funding", "passed", None, None),
-    ("Vader", "contacted", None, "No reply yet"),
-    ("ByzFunder", "contacted", None, "No reply yet"),
-    ("Fox", "contacted", None, "No reply yet"),
-    ("Bitty", "contacted", None, "No reply yet"),
-]
+def status_other(raw):
+    r = raw.lower()
+    for k, v in (("live", "signed"), ("pending", "negotiating"), ("in setup", "negotiating"), ("contacted", "contacted"), ("passed", "passed"), ("dropped", "dropped")):
+        if r.startswith(k):
+            return v
+    return "prospect"
 
-emails = {
-    "Pathway Funding": "subs@pathwayfunding.com",
-    "Malka Advance": "Deals@malkaadvance.com",
-    "Merchant Cash HQ": "Lisa@merchantcashhq.com",
-    "LendCap": "submissions@lendcapsolutions.com",
-}
+# Manual fallback only: web/scripts/sync-lenders.mjs syncs the JSON to Supabase on every deploy.
+extra = [(l["lender"], status_other(l["status"]), l.get("submission_email"), l.get("notes")) for l in data.get("other_lenders", [])]
+emails = {l["lender"]: l["submission_email"] for l in data["lenders"] if l.get("submission_email")}
 
 rows = []
 for l in data["lenders"]:
